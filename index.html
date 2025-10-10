@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arena de Batalha</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+            overflow: hidden;
+        }
+        
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        #setup {
+            background: white;
+            padding: 30px 20px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 15px;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            font-size: 16px;
+            resize: vertical;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: scale(1.05);
+        }
+        
+        #arena-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        
+        #arena-container.active {
+            display: flex;
+        }
+        
+        #info {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        
+        #remaining {
+            font-size: 24px;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        #canvas {
+            border: 5px solid white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            background: #1a1a2e;
+            max-width: 100%;
+            height: auto;
+        }
+        
+        #winner {
+            display: none;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 500px;
+        }
+        
+        #winner.active {
+            display: block;
+        }
+        
+        #winner h2 {
+            color: #667eea;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+        
+        #winner-name {
+            font-size: 48px;
+            color: #764ba2;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        
+        .instructions {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            #setup {
+                padding: 20px 15px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            textarea {
+                height: 150px;
+                font-size: 14px;
+            }
+            
+            button {
+                padding: 12px;
+                font-size: 16px;
+            }
+            
+            #info {
+                padding: 15px;
+            }
+            
+            #remaining {
+                font-size: 18px;
+            }
+            
+            #canvas {
+                border: 3px solid white;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="setup">
+            <h1>🎮 Arena de Batalha</h1>
+            <p class="instructions">Digite um nome por linha. As bolinhas vão batalhar até sobrar apenas uma vencedora!</p>
+            <textarea id="names" placeholder="João&#10;Maria&#10;Pedro&#10;Ana&#10;Carlos&#10;Beatriz"></textarea>
+            <button onclick="startBattle()">Iniciar Batalha!</button>
+        </div>
+        
+        <div id="arena-container">
+            <div id="info">
+                <div id="remaining">Participantes: 0</div>
+            </div>
+            <canvas id="canvas"></canvas>
+        </div>
+        
+        <div id="winner">
+            <h2>🏆 Vencedor!</h2>
+            <div id="winner-name"></div>
+            <button onclick="location.reload()">Nova Batalha</button>
+        </div>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            const maxWidth = window.innerWidth - 20;
+            const maxHeight = window.innerHeight - 200;
+            
+            if (maxWidth < 800) {
+                canvas.width = maxWidth;
+                canvas.height = Math.min(maxHeight, maxWidth * 0.75);
+            } else {
+                canvas.width = 800;
+                canvas.height = 600;
+            }
+        }
+        
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        let balls = [];
+        let animationId;
+        let totalBalls = 0;
+        
+        const colors = [
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', 
+            '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2',
+            '#F8B739', '#52C77E', '#FF8080', '#64D8CB'
+        ];
+        
+        class Ball {
+            constructor(name, x, y, color) {
+                this.name = name;
+                this.x = x;
+                this.y = y;
+                this.baseRadius = this.calculateRadius();
+                this.radius = this.baseRadius;
+                this.vx = (Math.random() - 0.5) * 3;
+                this.vy = (Math.random() - 0.5) * 3;
+                this.color = color;
+                this.life = 6;
+                this.alive = true;
+            }
+            
+            calculateRadius() {
+                if (totalBalls <= 10) return 25;
+                if (totalBalls <= 50) return 15;
+                if (totalBalls <= 100) return 10;
+                if (totalBalls <= 500) return 7;
+                if (totalBalls <= 1000) return 5;
+                return 3;
+            }
+            
+            updateRadius() {
+                const alive = balls.filter(b => b.alive).length;
+                const growthFactor = Math.sqrt(totalBalls / Math.max(alive, 1));
+                this.radius = Math.min(this.baseRadius * growthFactor, 40);
+            }
+            
+            getSpeed() {
+                return Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+            }
+            
+            draw() {
+                if (!this.alive) return;
+                
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = Math.max(1, this.radius / 10);
+                ctx.stroke();
+                
+                if (totalBalls <= 100) {
+                    ctx.fillStyle = 'white';
+                    const fontSize = Math.max(8, this.radius / 2);
+                    ctx.font = 'bold ' + fontSize + 'px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(this.name, this.x, this.y - this.radius - fontSize);
+                    
+                    const heartSize = Math.max(8, this.radius / 2);
+                    ctx.font = 'bold ' + heartSize + 'px Arial';
+                    ctx.fillText('❤️'.repeat(this.life), this.x, this.y + this.radius + heartSize);
+                }
+            }
+            
+            update() {
+                if (!this.alive) return;
+                
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                const speedBoost = 1.08;
+                
+                if (this.x - this.radius < 0 || this.x + this.radius > canvas.width) {
+                    this.vx *= -1;
+                    const currentSpeed = Math.abs(this.vx);
+                    this.vx = (this.vx / currentSpeed) * (currentSpeed * speedBoost);
+                    this.x = Math.max(this.radius, Math.min(canvas.width - this.radius, this.x));
+                }
+                
+                if (this.y - this.radius < 0 || this.y + this.radius > canvas.height) {
+                    this.vy *= -1;
+                    const currentSpeed = Math.abs(this.vy);
+                    this.vy = (this.vy / currentSpeed) * (currentSpeed * speedBoost);
+                    this.y = Math.max(this.radius, Math.min(canvas.height - this.radius, this.y));
+                }
+            }
+            
+            takeDamage() {
+                this.life--;
+                if (this.life <= 0) {
+                    this.alive = false;
+                }
+            }
+        }
+        
+        function checkCollision(ball1, ball2) {
+            if (!ball1.alive || !ball2.alive) return false;
+            
+            const dx = ball2.x - ball1.x;
+            const dy = ball2.y - ball1.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            return distance < ball1.radius + ball2.radius;
+        }
+        
+        function resolveCollision(ball1, ball2) {
+            const speed1 = ball1.getSpeed();
+            const speed2 = ball2.getSpeed();
+            
+            if (speed1 < speed2) {
+                ball1.takeDamage();
+            } else if (speed2 < speed1) {
+                ball2.takeDamage();
+            } else {
+                if (Math.random() < 0.5) {
+                    ball1.takeDamage();
+                } else {
+                    ball2.takeDamage();
+                }
+            }
+            
+            const dx = ball2.x - ball1.x;
+            const dy = ball2.y - ball1.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            const nx = dx / distance;
+            const ny = dy / distance;
+            
+            const dvx = ball2.vx - ball1.vx;
+            const dvy = ball2.vy - ball1.vy;
+            
+            const dotProduct = dvx * nx + dvy * ny;
+            
+            ball1.vx += nx * dotProduct;
+            ball1.vy += ny * dotProduct;
+            ball2.vx -= nx * dotProduct;
+            ball2.vy -= ny * dotProduct;
+            
+            const overlap = ball1.radius + ball2.radius - distance;
+            ball1.x -= nx * overlap / 2;
+            ball1.y -= ny * overlap / 2;
+            ball2.x += nx * overlap / 2;
+            ball2.y += ny * overlap / 2;
+        }
+        
+        function animate() {
+            ctx.fillStyle = '#1a1a2e';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            for (let ball of balls) {
+                ball.updateRadius();
+                ball.update();
+                ball.draw();
+            }
+            
+            for (let i = 0; i < balls.length; i++) {
+                for (let j = i + 1; j < balls.length; j++) {
+                    if (checkCollision(balls[i], balls[j])) {
+                        resolveCollision(balls[i], balls[j]);
+                    }
+                }
+            }
+            
+            const alive = balls.filter(b => b.alive).length;
+            document.getElementById('remaining').textContent = 'Participantes: ' + alive;
+            
+            if (alive === 1) {
+                const winner = balls.find(b => b.alive);
+                showWinner(winner.name);
+                return;
+            }
+            
+            if (alive === 0) {
+                showWinner('Empate!');
+                return;
+            }
+            
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        function showWinner(name) {
+            document.getElementById('winner-name').textContent = name;
+            document.getElementById('arena-container').classList.remove('active');
+            document.getElementById('winner').classList.add('active');
+        }
+        
+        function startBattle() {
+            const namesText = document.getElementById('names').value.trim();
+            const names = namesText.split('\n').filter(n => n.trim() !== '');
+            
+            if (names.length < 2) {
+                alert('Por favor, insira pelo menos 2 nomes!');
+                return;
+            }
+            
+            if (names.length > 10000) {
+                alert('Limite máximo de 10.000 participantes!');
+                return;
+            }
+            
+            totalBalls = names.length;
+            balls = [];
+            
+            for (let i = 0; i < names.length; i++) {
+                const x = Math.random() * (canvas.width - 100) + 50;
+                const y = Math.random() * (canvas.height - 100) + 50;
+                const color = colors[i % colors.length];
+                balls.push(new Ball(names[i].trim(), x, y, color));
+            }
+            
+            document.getElementById('setup').style.display = 'none';
+            document.getElementById('arena-container').classList.add('active');
+            
+            animate();
+        }
+    </script>
+</body>
+</html>
