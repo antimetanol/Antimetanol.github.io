@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔥 Star Pods - Queima Total 3x1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        header {
+            background: rgba(10, 10, 10, 0.95);
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid #ff0000;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff0000, #ff6600);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin-left: 30px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #ff0000;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #1a0000 0%, #0a0a0a 50%, #1a0000 100%);
+            padding: 80px 5% 100px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .flames {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(255, 0, 0, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 50%, rgba(255, 100, 0, 0.15) 0%, transparent 50%);
+            animation: flameMove 8s ease-in-out infinite;
+        }
+
+        @keyframes flameMove {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.1); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 900;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            text-transform: uppercase;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .hero .price-box {
+            background: rgba(255, 0, 0, 0.1);
+            border: 2px solid #ff0000;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 600px;
+            margin: 30px auto;
+            box-shadow: 0 0 40px rgba(255, 0, 0, 0.3);
+        }
+
+        .old-price {
+            font-size: 24px;
+            text-decoration: line-through;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .new-price {
+            font-size: 56px;
+            font-weight: 900;
+            color: #ff0000;
+            text-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+        }
+
+        .hero p {
+            font-size: 20px;
+            margin: 20px 0;
+            color: #ffcc00;
+            font-weight: 600;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            color: #fff;
+            padding: 25px 60px;
+            font-size: 24px;
+            font-weight: 900;
+            text-decoration: none;
+            border-radius: 50px;
+            margin-top: 30px;
+            transition: all 0.3s;
+            box-shadow: 0 10px 40px rgba(255, 0, 0, 0.4);
+            text-transform: uppercase;
+            animation: buttonPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes buttonPulse {
+            0%, 100% { box-shadow: 0 10px 40px rgba(255, 0, 0, 0.4); }
+            50% { box-shadow: 0 10px 60px rgba(255, 0, 0, 0.7); }
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #ff3333, #ff0000);
+        }
+
+        /* Product Section */
+        .product-section {
+            padding: 80px 5%;
+            background: #0f0f0f;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 50px auto;
+        }
+
+        .benefit-card {
+            background: rgba(255, 0, 0, 0.05);
+            border: 2px solid #ff0000;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(255, 0, 0, 0.3);
+        }
+
+        .benefit-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .benefit-card h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #ff0000;
+        }
+
+        /* Urgency Section */
+        .urgency {
+            background: linear-gradient(135deg, #1a0000, #0a0a0a);
+            padding: 60px 5%;
+            text-align: center;
+            border-top: 3px solid #ff0000;
+            border-bottom: 3px solid #ff0000;
+        }
+
+        .urgency h2 {
+            font-size: 36px;
+            margin-bottom: 30px;
+            color: #ffcc00;
+        }
+
+        .timer {
+            font-size: 48px;
+            font-weight: 900;
+            color: #ff0000;
+            margin: 30px 0;
+            text-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+        }
+
+        .viewers {
+            background: rgba(255, 100, 0, 0.2);
+            border: 2px solid #ff6600;
+            display: inline-block;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 18px;
+            margin-top: 20px;
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Testimonials */
+        .testimonials {
+            padding: 80px 5%;
+            background: #0a0a0a;
+        }
+
+        .testimonials h2 {
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 50px;
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .testimonial-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .stars {
+            color: #ffcc00;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .testimonial-text {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: #ddd;
+        }
+
+        .testimonial-author {
+            font-weight: 600;
+            color: #ff0000;
+        }
+
+        /* Footer */
+        footer {
+            background: #000;
+            padding: 40px 5%;
+            text-align: center;
+            border-top: 2px solid #ff0000;
+        }
+
+        footer p {
+            margin: 10px 0;
+            color: #888;
+        }
+
+        footer a {
+            color: #ff0000;
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .new-price {
+                font-size: 42px;
+            }
+
+            .cta-button {
+                padding: 20px 40px;
+                font-size: 20px;
+            }
+
+            nav a {
+                margin-left: 15px;
+                font-size: 14px;
+            }
+
+            .logo {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">⚡ STAR PODS</div>
+        <nav>
+            <a href="#inicio">Início</a>
+            <a href="#suporte">Suporte</a>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="inicio">
+        <div class="flames"></div>
+        <div class="hero-content">
+            <h1>🔥 QUEIMA TOTAL STAR PODS<br>3 Ignite V150 por apenas</h1>
+            <div class="price-box">
+                <div class="old-price">De R$ 299,70</div>
+                <div class="new-price">R$ 99,90</div>
+            </div>
+            <p>⚠️ Estoque final — acabou, acabou!</p>
+            <a href="#" class="cta-button" onclick="checkout()">🛒 COMPRAR AGORA</a>
+        </div>
+    </section>
+
+    <!-- Product Benefits -->
+    <section class="product-section">
+        <h2 style="text-align: center; font-size: 42px; margin-bottom: 20px;">Por que aproveitar essa oferta?</h2>
+        
+        <!-- Imagem do Produto -->
+        <div style="text-align: center; margin: 40px 0;">
+            <img src="URL_DA_SUA_IMAGEM_AQUI.png" alt="3 Ignite V150 Star Pods" style="max-width: 500px; width: 90%; height: auto; border-radius: 20px; box-shadow: 0 20px 60px rgba(255, 0, 0, 0.4); animation: float 3s ease-in-out infinite;">
+        </div>
+        
+        <div class="product-grid">
+            <div class="benefit-card">
+                <div class="benefit-icon">📦</div>
+                <h3>3 Pods pelo Preço de 1</h3>
+                <p>Economia de mais de 65% na compra tripla</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">🚀</div>
+                <h3>Entrega Rápida</h3>
+                <p>Receba em casa de forma rápida e discreta</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">💳</div>
+                <h3>Pix Seguro</h3>
+                <p>Pagamento 100% seguro e instantâneo</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">✅</div>
+                <h3>100% Original</h3>
+                <p>Garantia de autenticidade Star Pods</p>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 50px;">
+            <a href="#" class="cta-button" onclick="checkout()">🛒 GARANTIR MEU DESCONTO</a>
+        </div>
+    </section>
+
+    <!-- Urgency Section -->
+    <section class="urgency">
+        <h2>⚠️ Restam apenas algumas unidades!</h2>
+        <p style="font-size: 20px; margin-bottom: 20px;">Esta oferta expira em:</p>
+        <div class="timer" id="timer">05:00</div>
+        <div class="viewers">🔥 <span id="viewers">17</span> pessoas estão vendo este produto agora</div>
+        <div style="margin-top: 40px;">
+            <a href="#" class="cta-button" onclick="checkout()">⚡ APROVEITAR AGORA</a>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials">
+        <h2>⭐ O que nossos clientes dizem</h2>
+        <div class="testimonial-grid">
+            <div class="testimonial-card">
+                <div class="stars">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text">"Chegou muito rápido, produto 100% original. Melhor preço que já encontrei!"</p>
+                <p class="testimonial-author">Lucas M. - São Paulo, SP</p>
+            </div>
+            <div class="testimonial-card">
+                <div class="stars">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text">"Comprei os 3 e não me arrependo. Qualidade top e entrega discreta como prometido."</p>
+                <p class="testimonial-author">Fernanda S. - Rio de Janeiro, RJ</p>
+            </div>
+            <div class="testimonial-card">
+                <div class="stars">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text">"Atendimento excelente, produto original e preço imbatível. Super recomendo!"</p>
+                <p class="testimonial-author">Rafael P. - Belo Horizonte, MG</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="suporte">
+        <h3 style="color: #ff0000; margin-bottom: 20px;">STAR PODS</h3>
+        <p>Todos os direitos reservados © 2025</p>
+        <p>Contato: <a href="mailto:contato@starpods.com">contato@starpods.com</a></p>
+        <p>WhatsApp: <a href="https://wa.me/5511999999999">(11) 99999-9999</a></p>
+        <p style="margin-top: 20px;">
+            <a href="#">Política de Privacidade</a> | 
+            <a href="#">Termos de Uso</a>
+        </p>
+    </footer>
+
+    <script>
+        // Countdown Timer
+        let timeLeft = 300; // 5 minutes
+        const timerDisplay = document.getElementById('timer');
+        
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft > 0) {
+                timeLeft--;
+            } else {
+                timeLeft = 300; // Reset
+            }
+        }
+        
+        setInterval(updateTimer, 1000);
+
+        // Random viewer count
+        function updateViewers() {
+            const viewers = Math.floor(Math.random() * 10) + 12; // 12-22
+            document.getElementById('viewers').textContent = viewers;
+        }
+        
+        setInterval(updateViewers, 3000);
+
+        // Checkout function
+        function checkout() {
+            // Substitua o link abaixo pelo seu link de checkout real
+            window.location.href = 'SEU_LINK_DE_CHECKOUT_AQUI';
+            // Exemplo: window.location.href = 'https://pay.hotmart.com/seu-link';
+        }
+    </script>
+</body>
+</html>
