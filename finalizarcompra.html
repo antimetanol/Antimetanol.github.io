@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Finalizar Compra - Star Pods</title>
+  <style>
+    :root {
+      --primary: #ff0000;
+      --primary-dark: #cc0000;
+      --bg: #0a0a0a;
+      --card-bg: #1a1a1a;
+      --border: #333;
+      --text: #ffffff;
+      --text-muted: #999;
+      --danger: #ff0000;
+      font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+    }
+    body { 
+      display:flex; 
+      align-items:center; 
+      justify-content:center; 
+      min-height:100vh; 
+      background: linear-gradient(135deg, #1a0000 0%, #0a0a0a 50%, #1a0000 100%);
+      color:var(--text); 
+      margin:0;
+      padding: 20px;
+    }
+    .card { 
+      width:100%; 
+      max-width:520px; 
+      background:var(--card-bg); 
+      border-radius:20px; 
+      padding:32px; 
+      box-shadow:0 20px 60px rgba(255, 0, 0, 0.3);
+      border: 2px solid var(--primary);
+      animation:fadeIn 0.4s ease; 
+      position:relative; 
+    }
+    @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+    .header{
+      display:flex; 
+      justify-content:space-between; 
+      align-items:center; 
+      margin-bottom:24px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid var(--border);
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      background: linear-gradient(45deg, #ff0000, #ff6600);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .product{font-weight:600; font-size:15px;}
+    .price{
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color:white; 
+      padding:10px 16px; 
+      border-radius:12px; 
+      font-weight:700; 
+      font-size:18px;
+      box-shadow: 0 5px 20px rgba(255, 0, 0, 0.3);
+    }
+    .step{display:none;}.step.active{display:block;}
+    label{
+      display:block; 
+      font-size:14px; 
+      margin:16px 0 8px; 
+      font-weight:600;
+      color: #fff;
+    }
+    input, select, textarea{
+      width:100%; 
+      padding:14px; 
+      border:2px solid var(--border); 
+      border-radius:12px; 
+      font-size:14px; 
+      transition:border-color 0.2s, box-shadow 0.2s;
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+    }
+    input:focus, select:focus, textarea:focus{
+      border-color:var(--primary); 
+      box-shadow:0 0 0 3px rgba(255, 0, 0, 0.2); 
+      outline:none;
+      background: rgba(255, 255, 255, 0.08);
+    }
+    select {
+      cursor: pointer;
+    }
+    option {
+      background: #1a1a1a;
+      color: #fff;
+    }
+    .row{display:flex; gap:12px;}
+    .actions{
+      display:flex; 
+      justify-content:space-between; 
+      align-items:center; 
+      margin-top:24px;
+    }
+    button{
+      padding:14px 24px; 
+      border-radius:12px; 
+      border:0; 
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color:white; 
+      font-weight:700; 
+      cursor:pointer; 
+      transition:all 0.2s;
+      font-size: 15px;
+      box-shadow: 0 5px 20px rgba(255, 0, 0, 0.3);
+    }
+    button:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(255, 0, 0, 0.5);
+    } 
+    button:active{transform:scale(0.98);}
+    button.ghost{
+      background:transparent; 
+      color:var(--text); 
+      border:2px solid var(--border);
+      box-shadow: none;
+    }
+    button.ghost:hover {
+      border-color: var(--primary);
+      background: rgba(255, 0, 0, 0.1);
+    }
+    .small{font-size:13px; color:var(--text-muted);}
+    .qr-wrap{display:flex; flex-direction:column; align-items:center; gap:16px;}
+    img.qr{
+      width:240px; 
+      height:240px; 
+      object-fit:contain; 
+      border-radius:12px; 
+      border:2px solid var(--border); 
+      padding:12px; 
+      background:white;
+    }
+    .copy-row{display:flex; width:100%; gap:8px;}.copy-row input{flex:1;}
+    .expired{color:var(--danger); font-weight:600;}
+    .note{
+      font-size:12px; 
+      color:var(--text-muted); 
+      margin-top:12px; 
+      text-align:center;
+      background: rgba(255, 0, 0, 0.1);
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 0, 0, 0.3);
+    }
+    .steps-indicator{display:flex; gap:8px; margin-top:24px; justify-content:center;}
+    .dot{
+      width:12px; 
+      height:12px; 
+      border-radius:999px; 
+      background:#333; 
+      transition:all 0.3s;
+    }
+    .dot.active{
+      background:var(--primary);
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    }
+    .top-banner{
+      position:absolute; 
+      top:-50px; 
+      left:0; 
+      width:100%; 
+      background: linear-gradient(135deg, var(--danger), #ff6600);
+      color:white; 
+      padding:14px 0; 
+      font-weight:700; 
+      text-align:center; 
+      border-radius:12px 12px 0 0; 
+      font-size:15px;
+      box-shadow: 0 5px 20px rgba(255, 0, 0, 0.4);
+    }
+    .secure-note{
+      text-align:center; 
+      color: #00ff88;
+      font-weight:600; 
+      margin-bottom:18px;
+      font-size: 14px;
+    }
+    .info-box {
+      background: rgba(255, 100, 0, 0.1);
+      border: 1px solid rgba(255, 100, 0, 0.3);
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 8px;
+      font-size: 13px;
+      color: #ffaa66;
+      line-height: 1.5;
+    }
+    ::placeholder {
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+<div class="top-banner">🔥 Essa oferta expira em <span id="offer-countdown">08:00</span> minutos!</div>
+<div class="secure-note">🔒 Ambiente 100% seguro e criptografado</div>
+<div class="header">
+<div>
+  <div class="logo">⚡ STAR PODS</div>
+  <div class="product">Você está comprando:<br><span class="small">3x Ignite V150 - Promoção Queima Total</span></div>
+</div>
+<div class="price">R$ 99,90</div>
+</div>
+
+<form id="form-1" class="step active">
+<label for="cpf">CPF</label>
+<input id="cpf" name="cpf" inputmode="numeric" placeholder="000.000.000-00" required oninput="handleCPFInput(this)">
+
+<label for="nome">Nome completo</label>
+<input id="nome" name="nome" placeholder="Digite seu nome completo" required>
+
+<label for="whatsapp">WhatsApp (com DDD)</label>
+<input id="whatsapp" name="whatsapp" placeholder="11999999999" required pattern="\d+" oninput="this.value=this.value.replace(/\D/g,'')">
+
+<label for="sabor">Sabor desejado</label>
+<select id="sabor" name="sabor" required>
+  <option value="">Selecione o sabor</option>
+  <option value="menta">Menta Glacial</option>
+  <option value="morango">Morango</option>
+  <option value="uva">Uva Gelada</option>
+  <option value="melancia">Melancia Ice</option>
+  <option value="blueberry">Blueberry</option>
+  <option value="manga">Manga Tropical</option>
+  <option value="limao">Limão</option>
+  <option value="cereja">Cereja</option>
+</select>
+<div class="info-box">
+  ⚠️ <strong>Atenção:</strong> Caso o sabor selecionado não esteja disponível em estoque no momento da separação, enviaremos um sabor similar para não atrasar sua entrega. Agradecemos a compreensão.
+</div>
+
+<div class="actions">
+  <div class="small">🔐 Dados protegidos</div>
+  <button type="button" id="next-1">Próximo →</button>
+</div>
+</form>
+
+<form id="form-2" class="step">
+<label for="cep">CEP</label>
+<input id="cep" name="cep" placeholder="00000-000" required pattern="\d+" oninput="this.value=this.value.replace(/\D/g,'')">
+
+<label for="rua">Endereço (Rua/Avenida)</label>
+<input id="rua" name="rua" placeholder="Digite seu endereço" required>
+
+<div class="row">
+<div style="flex:2">
+<label for="numero">Número</label>
+<input id="numero" name="numero" placeholder="123" required pattern="\d+" oninput="this.value=this.value.replace(/\D/g,'')">
+</div>
+<div style="flex:1">
+<label for="complemento">Complemento</label>
+<input id="complemento" name="complemento" placeholder="Apto, Bloco">
+</div>
+</div>
+
+<label for="cidade">Cidade</label>
+<input id="cidade" name="cidade" placeholder="Digite sua cidade" required>
+
+<label for="estado">Estado (UF)</label>
+<input id="estado" name="estado" placeholder="SP" maxlength="2" required style="text-transform: uppercase;">
+
+<div class="actions">
+  <button type="button" class="ghost" id="back-2">← Voltar</button>
+  <button type="button" id="next-2">Ir para pagamento →</button>
+</div>
+</form>
+
+<div id="form-3" class="step">
+<div class="qr-wrap">
+<img id="qr-img" class="qr" alt="QR code PIX">
+<div class="copy-row">
+<input id="pix-code" readonly>
+<button id="copy-btn">📋 Copiar código</button>
+</div>
+<div id="timer" class="small">⏱️ Código expira em: <span id="countdown">30:00</span></div>
+<div class="note">
+  ⚠️ <strong>Importante:</strong> Após realizar o pagamento via PIX, seu pedido será processado automaticamente. Se o código expirar, volte e gere um novo código.
+</div>
+</div>
+<div style="margin-top:20px;display:flex;justify-content:space-between;align-items:center">
+<button type="button" class="ghost" id="back-3">← Voltar</button>
+<button type="button" id="finish">✓ Concluir pedido</button>
+</div>
+</div>
+
+<div class="steps-indicator" aria-hidden="true">
+<div class="dot active" id="dot-1"></div>
+<div class="dot" id="dot-2"></div>
+<div class="dot" id="dot-3"></div>
+</div>
+</div>
+
+<script>
+const PIX_CODE='00020126580014BR.GOV.BCB.PIX013641a1c575-b21e-4eb5-843c-05c6e9408e81520400005303986540599.905802BR5920Nilvande Silva Costa6009SAO PAULO62140510PZ56BpwH3O63046136';
+const QR_IMAGE_SRC='qrcode.png';
+const EXPIRE_MS=30*60*1000;
+const steps=[document.getElementById('form-1'),document.getElementById('form-2'),document.getElementById('form-3')];
+const dots=[document.getElementById('dot-1'),document.getElementById('dot-2'),document.getElementById('dot-3')];
+let current=0;
+
+function showStep(i){
+  steps.forEach((s,idx)=>s.classList.toggle('active',idx===i));
+  dots.forEach((d,idx)=>d.classList.toggle('active',idx===i));
+  current=i;
+  if(i===2)enterPaymentStep();
+}
+
+document.getElementById('next-1').addEventListener('click',()=>{
+  if(!isCPFComplete()||!nome.value.trim()||!whatsapp.value.trim()||!sabor.value){
+    alert('⚠️ Por favor, preencha todos os campos obrigatórios: CPF (11 dígitos), nome completo, WhatsApp e sabor desejado.');
+    return;
+  }
+  saveFormData();
+  showStep(1);
+});
+
+document.getElementById('back-2').addEventListener('click',()=>showStep(0));
+
+document.getElementById('next-2').addEventListener('click',()=>{
+  if(!cep.value.trim()||!rua.value.trim()||!numero.value.trim()||!cidade.value.trim()||!estado.value.trim()){
+    alert('⚠️ Por favor, preencha todos os campos de endereço obrigatórios.');
+    return;
+  }
+  saveFormData();
+  showStep(2);
+});
+
+document.getElementById('back-3').addEventListener('click',()=>showStep(1));
+
+document.getElementById('finish').addEventListener('click',()=>{
+  alert('✅ Pedido registrado com sucesso!\n\n🔥 Copie o código PIX e realize o pagamento para garantir sua compra na Queima Total!\n\n⏱️ Não perca tempo, o estoque é limitado!');
+});
+
+document.getElementById('copy-btn').addEventListener('click',async()=>{
+  try{
+    await navigator.clipboard.writeText(pixCode.value);
+    alert('✅ Código PIX copiado com sucesso!\n\nAgora é só colar no seu aplicativo bancário e realizar o pagamento.');
+  }catch{
+    pixCode.select();
+    document.execCommand('copy');
+    alert('✅ Código PIX copiado com sucesso!');
+  }
+});
+
+function saveFormData(){
+  const d={
+    cpf:cpf.value,
+    nome:nome.value,
+    whatsapp:whatsapp.value,
+    sabor:sabor.value,
+    cep:cep.value,
+    rua:rua.value,
+    numero:numero.value,
+    complemento:complemento.value,
+    cidade:cidade.value,
+    estado:estado.value
+  };
+  localStorage.setItem('starpods_checkout',JSON.stringify(d));
+}
+
+function loadFormData(){
+  const d=JSON.parse(localStorage.getItem('starpods_checkout')||'{}');
+  Object.keys(d).forEach(k=>{
+    const el=document.getElementById(k);
+    if(el)el.value=d[k];
+  });
+}
+
+function handleCPFInput(el){
+  el.value=el.value.replace(/\D/g,'').slice(0,11);
+  el.value=formatCPF(el.value);
+}
+
+function formatCPF(v){
+  const nums=String(v).replace(/\D/g,'');
+  if(nums.length<=3)return nums;
+  if(nums.length<=6)return nums.replace(/(\d{3})(\d+)/,'$1.$2');
+  if(nums.length<=9)return nums.replace(/(\d{3})(\d{3})(\d+)/,'$1.$2.$3');
+  return nums.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/,'$1.$2.$3-$4');
+}
+
+function isCPFComplete(){
+  return cpf.value.replace(/\D/g,'').length===11;
+}
+
+const qrImg=document.getElementById('qr-img');
+const pixCode=document.getElementById('pix-code');
+const countdownEl=document.getElementById('countdown');
+const offerCountdownEl=document.getElementById('offer-countdown');
+
+function enterPaymentStep(){
+  qrImg.src=QR_IMAGE_SRC;
+  pixCode.value=PIX_CODE;
+  const expireTs=Date.now()+EXPIRE_MS;
+  startCountdown(expireTs);
+}
+
+let countdownTimer;
+function startCountdown(expireTs){
+  clearInterval(countdownTimer);
+  function tick(){
+    const diff=expireTs-Date.now();
+    if(diff<=0){
+      clearInterval(countdownTimer);
+      countdownEl.textContent='00:00';
+      document.getElementById('copy-btn').disabled=true;
+      countdownEl.parentElement.classList.add('expired');
+      return;
+    }
+    const m=Math.floor(diff/60000);
+    const s=Math.floor((diff%60000)/1000);
+    countdownEl.textContent=String(m).padStart(2,'0')+":"+String(s).padStart(2,'0');
+  }
+  tick();
+  countdownTimer=setInterval(tick,1000);
+}
+
+loadFormData();
+
+(function startOfferCountdownOnLoad(){
+  let offerSeconds=8*60;
+  const offerInterval=setInterval(()=>{
+    if(offerSeconds>=0){
+      let m=Math.floor(offerSeconds/60);
+      let s=offerSeconds%60;
+      document.getElementById('offer-countdown').textContent=String(m).padStart(2,'0')+":"+String(s).padStart(2,'0');
+      offerSeconds--;
+    }else clearInterval(offerInterval);
+  },1000);
+})();
+</script>
+</body>
+</html>
